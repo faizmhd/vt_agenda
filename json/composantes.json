@@ -1,0 +1,16 @@
+{
+   "LES_COMPOSANTES": {
+      "UNe_COMPOSANTE": {
+         "CODE": "2152",
+         "DATE_MODIFICATION": "41291,5923726852",
+         "NOM": "DEPARTEMENT BIOLOGIE",
+         "ALIAS": "DEPBIO",
+         "COMMENTAIRE": "",
+         "IDENTIFIANT": "",
+         "TYPE_DE_COMPOSANTE": "2",
+         "COULEUR": "33023",
+         "COULEUR_POLICE": "0",
+         "CODE_PROPRIETAIRE": "2"
+      }
+   }
+}
