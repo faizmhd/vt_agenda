@@ -28,8 +28,8 @@ app.all('/test');
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("../vt-agenda-firebase-adminsdk-bmgkj-bdf929fafe");
-var grade=require('../JSON/grade.json');
+var serviceAccount = require("./vt-agenda-firebase-adminsdk-bmgkj-bdf929fafe");
+//var grade=require('../JSON/grade.json');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://vt-agenda.firebaseio.com"
@@ -46,9 +46,100 @@ function main(){
       });
 */
    //Groupes('15824275');
-    SuperGroupe();
+    //SuperGroupe();
+   // NonSuperGroupes();
+   // SeancesFormat();
+    EnseignementFormat();
 };
 
+function EnseignementFormat() {
+    db.collection("ENSEIGNEMENTS").get().then(
+        (snapshot)=>{
+            snapshot.forEach((document)=>{
+                try {
+
+                        db.collection("ENSEIGNEMENTS").doc(document.id).update({
+                            GROUPE: document.data().LES_RESSOURCES.UNE_RESSOURCE.filter((el) => {
+                                return el.TYPE === 'GROUPE';
+                            })
+                        })
+
+                }catch(err){
+                   // console.log(document.data());
+                }
+                //console.log(document.data().LES_RESSOURCES.UNE_RESSOURCE!==undefined);
+             /*   if(document.data().LES_RESSOURCES.UNE_RESSOURCE!==undefined) {
+                    db.collection("ENSEIGNEMENTS").doc(document.id).update({
+                        GROUPE: document.data().LES_RESSOURCES.UNE_RESSOURCE.filter((el) => {
+                            return el.TYPE === 'GROUPE';
+                        })
+                    })
+                } */
+            })
+        }
+
+    )
+}
+
+
+
+
+
+
+function SeancesFormat() {
+    db.collection("SEANCES").get().then(
+        snapshot=>{
+            snapshot.forEach(document=>{
+
+               db.collection("SEANCES").doc(document.id).update(
+                    {
+                        PROF:document.data().LES_RESSOURCES.filter((el)=>{
+                            return el.TYPE==='PROF'
+                        }),
+                        SALLE:document.data().LES_RESSOURCES.filter((el)=>{
+                            return el.TYPE ==='SALLE';
+                        }),
+                        GROUPE:document.data().LES_RESSOURCES.filter((el)=>{
+                            return el.TYPE ==='GROUPE';
+                        })
+                    }
+                )
+            });
+
+            console.log('fin');
+        }
+
+    );
+
+}
+
+function NonSuperGroupes() {
+    var tabResult=[];
+    db.collection("GROUPES").get().then(
+        snapshot=>{
+            snapshot.forEach(document=>{
+                if (document.data().LES_SUPER_GROUPES!==undefined){
+                    tabResult.push({
+                        ID:document.id,
+                        Tab:document.data().LES_SUPER_GROUPES.UN_CODE_SUPER_GROUPE
+                    });
+                };
+            });
+
+
+             tabResult.forEach((el)=>{
+                 db.collection("GROUPES").doc(el.ID).update(
+                     {
+                         LES_SUPER_GROUPES:el.Tab
+                     }
+                 )
+             });
+             console.log('fin');
+        }
+
+    );
+
+}
 function SuperGroupe() {
     var tabResult=[];
   db.collection("GROUPES").get().then(
@@ -97,7 +188,7 @@ function Groupes(SG) {
 //utiliser with converter pour remettre les array aux premier niveau
 function SeancesGroupes(CG){
     var tabResult=[];
-    db.collection("SEANCES").where('LES_RESSOURCES.UNE_RESSO','==','GROUPE').limit(10).get().then(
+    db.collection("SEANCES").where('LES_RESSOURCES','==','GROUPE').limit(10).get().then(
         snapshot=>{
             snapshot.forEach(doc => {
 
