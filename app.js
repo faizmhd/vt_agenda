@@ -49,11 +49,130 @@ function main(){
     //SuperGroupe();
    // NonSuperGroupes();
    // SeancesFormat();
-    EnseignementFormat();
+    //EnseignementFormat();
+   // calendrierData1();
+  //  db.collection("Data_EDT").doc().delete();
+    //calendrierDataProfInfo();
+    //calendrierDataSalleInfo();
+    calendrierDataEnseignementInfo();
 };
+function calendrierData1() {
+    //
+    db.collection("SEANCES").limit(1).get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                db.collection("Data_EDT").doc().set({
+                    GROUPES: doc.data().GROUPE,
+                    PROF: doc.data().PROF,
+                    SALLE: doc.data().SALLE,
+                    DATE: doc.data().DATE,
+                    HEURE: doc.data().HEURE,
+                    DUREE: doc.data().DUREE,
+                    ENSEIGNEMENT:doc.data().ENSEIGNEMENT
+                })
+            })
+        }
+    )
+};
+function calendrierDataEnseignementInfo(){
+    db.collection("Data_EDT").limit(1).get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    EnseignementInfo:[]
+                }).then(()=>{
+                    db.collection("ENSEIGNEMENTS").where("CODE","in",doc.data().ENSEIGNEMENT).limit(1).get().then(
+                        snapshotbis=>{
+                            console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
 
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    EnseignementInfo:[/*...doc.data().SalleInfo,*/{
+                                        CODE_MATIERE:el.data().CODE_MATIERE,
+                                        NOM:el.data().NOM
+                                    }]
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    );
+}
+function calendrierDataSalleInfo(){
+    db.collection("Data_EDT").limit(1).get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    SalleInfo:[]
+                }).then(()=>{
+                    db.collection("SALLES").where("CODE","in",doc.data().SALLE).limit(1).get().then(
+                        snapshotbis=>{
+                            console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
+
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    SalleInfo:[{
+                                        Nom:el.data().ALIAS,
+                                        CODE_ZONE:el.data().CODE_ZONE
+                                    }]
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    );
+}
+function calendrierDataMatiereInfo(){
+    db.collection().limit(1).get().then();
+}
+function calendrierDataProfInfo() {
+    db.collection("Data_EDT").limit(1).get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+
+                    ProfIdentite:[]
+                }).then(()=>{
+                    db.collection("PROFESSEURS").where("CODE","in",doc.data().PROF).limit(1).get().then(
+                        snapshotbis=>{
+                            console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
+
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    ProfIdentite:[...doc.data().ProfIdentite,{
+                                        Nom:el.data().NOM,
+                                        Prenom:el.data().PRENOM
+                                    }]
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    )
+};
 function EnseignementFormat() {
-    db.collection("ENSEIGNEMENTS").get().then(
+    db.collection("ENSEIGNEMENTS").limit(1).get().then(
         (snapshot)=>{
             snapshot.forEach((document)=>{
                 try {
@@ -61,6 +180,8 @@ function EnseignementFormat() {
                         db.collection("ENSEIGNEMENTS").doc(document.id).update({
                             GROUPE: document.data().LES_RESSOURCES.UNE_RESSOURCE.filter((el) => {
                                 return el.TYPE === 'GROUPE';
+                            }).map((el)=>{
+                                return el.CODE_RESSOURCE
                             })
                         })
 
@@ -95,12 +216,18 @@ function SeancesFormat() {
                     {
                         PROF:document.data().LES_RESSOURCES.filter((el)=>{
                             return el.TYPE==='PROF'
+                        }).map((el)=>{
+                            return el.CODE_RESSOURCE
                         }),
                         SALLE:document.data().LES_RESSOURCES.filter((el)=>{
                             return el.TYPE ==='SALLE';
+                        }).map((el)=>{
+                            return el.CODE_RESSOURCE
                         }),
                         GROUPE:document.data().LES_RESSOURCES.filter((el)=>{
                             return el.TYPE ==='GROUPE';
+                        }).map((el)=>{
+                            return el.CODE_RESSOURCE
                         })
                     }
                 )
@@ -151,7 +278,7 @@ function SuperGroupe() {
           });
           tabResult.forEach(document =>{
               console.log(document.data().NOM+'  '+document.data().CODE);
-              //Groupes(document.data().CODE);
+              db.collection('SUPER_GROUPES').doc().set(document.data());
           });
       }
 
