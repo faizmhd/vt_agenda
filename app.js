@@ -50,18 +50,184 @@ function main(){
    // NonSuperGroupes();
    // SeancesFormat();
     //EnseignementFormat();
-   // calendrierData1();
-  //  db.collection("Data_EDT").doc().delete();
-    //calendrierDataProfInfo();
-    //calendrierDataSalleInfo();
-    calendrierDataEnseignementInfo();
+
+     //calendrierData1();
+    //calendrierDataProfInfo();//fait
+    //calendrierDataSalleInfo();//fait
+   // calendrierDataEnseignementInfo(); //fait
+   // calendrierDataMatiereInfo();//fait
+    //calendrierDataZoneInfo(); //fait
+   // HoraireCours(); fait
+    //AjoutTypeActivite(); fait
+   // AjoutNomActivite(); fait
 };
-function calendrierData1() {
-    //
-    db.collection("SEANCES").limit(1).get().then(
+//EDT par salle Zone>Salle>DATA EDT
+//EDT par PROF
+function AjoutNomActivite() {
+    db.collection("Data_EDT")
+        //.limit(1)
+        .get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
-                db.collection("Data_EDT").doc().set({
+                // console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    TypeActivite:""
+                }).then(()=>{
+                    db.collection("TYPES_ACTIVITES").where("CODE","==",doc.data().CodeActivite)
+                        //.limit(1)
+                        .get().then(
+                        snapshotbis=>{
+                            //console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
+
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    TypeActivite:{
+                                        NOM:el.data().NOM,
+                                        ALIAS:el.data().ALIAS
+                                    }
+
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    );
+};
+function AjoutTypeActivite() {
+    db.collection("Data_EDT")
+        //.limit(1)
+        .get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                // console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    CodeActivite:""
+                }).then(()=>{
+                    db.collection("ENSEIGNEMENTS").where("CODE","==",doc.data().ENSEIGNEMENT)
+                        //.limit(1)
+                        .get().then(
+                        snapshotbis=>{
+                            //console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
+
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    CodeActivite:el.data().TYPE_ACTIVITE
+
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    );
+};
+function HoraireCours(){
+    db.collection("Data_EDT")
+        //.limit(1)
+        .get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                // console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    DateDebut:datePArser(doc.data().DATE,doc.data().HEURE),
+                    DateFin:dateFin(doc.data().DATE,doc.data().HEURE,doc.data().DUREE)
+                })
+            });
+        }
+    );
+}
+
+
+function calendrierDataZoneInfo(){
+    db.collection("Data_EDT")
+        //.limit(1)
+         .get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+               // console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    ZoneInfo:""
+                }).then(()=>{
+                    db.collection("ZONES_DE_SALLES").where("CODE","==",doc.data().SalleInfo.CODE_ZONE)
+                        //.limit(1)
+                    .get().then(
+                        snapshotbis=>{
+                            //console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
+
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    ZoneInfo:/*...doc.data().SalleInfo,*/{
+                                        NOM:el.data().NOM
+                                    }
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    );
+}
+
+function calendrierDataMatiereInfo(){
+    db.collection("Data_EDT")
+        //.limit(1)
+        .get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+               // console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    MatiereInfoBis:[]
+                }).then(()=>{
+                    db.collection("MATIERES").where("CODE","==",doc.data().EnseignementInfo[0].CODE_MATIERE)
+                        //.limit(1)
+                    .get().then(
+                        snapshotbis=>{
+                          //  console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
+
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    MatiereInfoBis:{
+                                        NOM:el.data().NOM,
+                                        ALIAS:el.data().ALIAS
+                                    }
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    );
+}
+
+function calendrierData1() {
+    //
+    db.collection("SEANCES")
+       // .limit(1)
+        .get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                db.collection("Data_EDT").doc().up({
                     GROUPES: doc.data().GROUPE,
                     PROF: doc.data().PROF,
                     SALLE: doc.data().SALLE,
@@ -75,7 +241,7 @@ function calendrierData1() {
     )
 };
 function calendrierDataEnseignementInfo(){
-    db.collection("Data_EDT").limit(1).get().then(
+    db.collection("Data_EDT").get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
                 console.log('1');
@@ -83,7 +249,9 @@ function calendrierDataEnseignementInfo(){
                     //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
                     EnseignementInfo:[]
                 }).then(()=>{
-                    db.collection("ENSEIGNEMENTS").where("CODE","in",doc.data().ENSEIGNEMENT).limit(1).get().then(
+                    db.collection("ENSEIGNEMENTS").where("CODE","==",doc.data().ENSEIGNEMENT)
+
+                        .get().then(
                         snapshotbis=>{
                             console.log('2');
                             snapshotbis.forEach((el)=>{
@@ -105,28 +273,35 @@ function calendrierDataEnseignementInfo(){
         }
     );
 }
+
+
+
 function calendrierDataSalleInfo(){
-    db.collection("Data_EDT").limit(1).get().then(
+    db.collection("Data_EDT")
+        //.limit(1)
+        .get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
-                console.log('1');
                 db.collection("Data_EDT").doc(doc.id).update({
                     //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
-                    SalleInfo:[]
+                    SalleInfo:""
                 }).then(()=>{
-                    db.collection("SALLES").where("CODE","in",doc.data().SALLE).limit(1).get().then(
+                    db.collection("SALLES").where("CODE","==",doc.data().SALLE)
+                        //.limit(1)
+                    .get().then(
                         snapshotbis=>{
-                            console.log('2');
+
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
 
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
-                                    SalleInfo:[{
-                                        Nom:el.data().ALIAS,
+                                    SalleInfo:{
+                                        ALIAS:el.data().ALIAS,
+                                        Nom:el.data().NOM,
                                         CODE_ZONE:el.data().CODE_ZONE
-                                    }]
+                                    }
                                 });
                             });
                         }
@@ -136,22 +311,24 @@ function calendrierDataSalleInfo(){
         }
     );
 }
-function calendrierDataMatiereInfo(){
-    db.collection().limit(1).get().then();
-}
+
 function calendrierDataProfInfo() {
-    db.collection("Data_EDT").limit(1).get().then(
+    db.collection("Data_EDT")
+
+        .get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
-                console.log('1');
+               // console.log('1');
                 db.collection("Data_EDT").doc(doc.id).update({
                     //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
 
                     ProfIdentite:[]
                 }).then(()=>{
-                    db.collection("PROFESSEURS").where("CODE","in",doc.data().PROF).limit(1).get().then(
+                    db.collection("PROFESSEURS").where("CODE","==",doc.data().PROF[0])
+                        //.limit(1)
+                        .get().then(
                         snapshotbis=>{
-                            console.log('2');
+                           // console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
 
@@ -332,19 +509,30 @@ function SeancesGroupes(CG){
     )
 }
 
-async function ObjetSeance() {
-//    var tabResult = [];
-     db.collection("SEANCES")
-        //.where('LES_RESSOURCES.UNE_RESSO', '==', 'GROUPE')
-        .limit(1)
-        .get()
+function datePArser(date,heure) {
+    if (heure.length===3) {
+        heure = '0' + heure;
+    }
+    let VarSplit=date.split('-');
+    let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]), parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3])).toString();
+    return DateDebut;
+    // console.log(date + '  ' + heure);
 
-        .then((snapshot)=>{
-            snapshot.forEach((doc)=>{
-                console.log(doc.data().LES_RESSOURCES.UNE_RESSOURCE.filter((el)=> el.TYPE==='GROUPE')[0].CODE_RESSOURCE);
-            })
-        });
+//return true
+}
+function dateFin(date,heure,min) {
+    if (heure.length===3) {
+        heure = '0' + heure;
+    }
+    let VarSplit=date.split('-');
+    let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]), parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3]));
+    let DateFin=add_minutes(DateDebut,parseInt(min)).toString();
+    return DateFin;
 
+}
+
+var add_minutes =  function (dt, minutes) {
+    return new Date(dt.getTime() + minutes*60000);
 }
 
 //let CollectionName;

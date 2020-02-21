@@ -6,6 +6,14 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import firebase from '../services/Firebase';
 import { useCollection } from 'react-firebase-hooks/firestore';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from 'react-router-dom';
 import { ScheduleComponent, Day, Week, WorkWeek, Month, Agenda, Inject } from '@syncfusion/ej2-react-schedule';
 
 
@@ -49,7 +57,7 @@ let niveaudeux;
     );
 
     const [valueSeance , loadingSeance, errorSeance] = useCollection(
-        firebase.firestore().collection('SEANCES').where('GROUPE','array-contains-any',[NiveauUn,NiveauDeux,NiveauTrois]),
+        firebase.firestore().collection('Data_EDT').where('GROUPES','array-contains-any',[NiveauUn,NiveauDeux,NiveauTrois]),
         {
             snapshotListenOptions: { includeMetadataChanges: true },
         }
@@ -109,8 +117,8 @@ const dataScheduler=valueSeance.docs.map(
 
     return (
 
-<div>
-
+        <Grid container spacing={1}>
+            <Grid item xs={4}>
             <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
                     Niveau
@@ -142,7 +150,8 @@ const dataScheduler=valueSeance.docs.map(
 
                 {NiveauUn}
             </FormControl>
-
+            </Grid>
+                <Grid item xs={4}>
         <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
         Niveau
@@ -173,6 +182,8 @@ const dataScheduler=valueSeance.docs.map(
     {loadingDeux && <span>Collection: Loading...</span>}
             {NiveauDeux}
 </FormControl>
+                </Grid>
+                    <Grid item xs={4}>
     <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
             Niveau
@@ -204,27 +215,36 @@ const dataScheduler=valueSeance.docs.map(
         {NiveauTrois}
 
     </FormControl>
-
+                    </Grid>
+            <Grid item   direction="row"
+                  justify="center"
+                  alignItems="center"
+                  xs={12}>
+                <Link to="/users">
+                <Button variant="contained" color="primary">
+                    Valider
+                </Button>
+                </Link>
+            </Grid>
         {valueSeance && (
 
             <ul>
                 {valueSeance.docs.map(doc => {
-                    return  <li >{doc.data().DATE}//
-                        {doc.data().DUREE}//
-                        {doc.data().HEURE}//
-                        {datePArser(doc.data().DATE,doc.data().HEURE)}
-                        // {dateFin(doc.data().DATE,doc.data().HEURE,doc.data().DUREE)}</li>
+                    return  <li >{doc.data().MatiereInfoBis.NOM}//
+                        {doc.data().SalleInfo.Nom}//{doc.data().ZoneInfo.NOM}//{doc.data().TypeActivite.ALIAS}
+                    </li>
                 })}
             </ul>
         )}
 
-    <ScheduleComponent workHours={{
+
+ {/*   <ScheduleComponent workHours={{
         highlight: true, start: '8:00', end: '19:00'
     }}>
         <Inject services={[Day, Week, WorkWeek, Month, Agenda]}/>
-    </ScheduleComponent>
-   </div>
+    </ScheduleComponent>*/}
 
+</Grid>
 
     );
 }
@@ -238,7 +258,7 @@ function datePArser(date:string,heure:string) {
 return DateDebut;
    // console.log(date + '  ' + heure);
 
-return true ;
+//return true
 }
 function dateFin(date:string,heure:string,min:string) {
     if (heure.length===3) {
