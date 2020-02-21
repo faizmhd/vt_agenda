@@ -1,27 +1,46 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Test from './components/test';
+import Test from './components/testtest';
+
+
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from 'react-router-dom';
+import { ScheduleComponent, Day, Week, WorkWeek, Month, Agenda, Inject } from '@syncfusion/ej2-react-schedule';
+
+
+
+
 
 const App = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-          <Test></Test>
 
-        </a>
+
+  return (
+
+    <div className="App">
+        <Router>
+      <header className="App-header">
+          <div>
+              <Switch>
+                  <Route path="/users">
+                      <ScheduleComponent   startHour="7:00" endHour="20:00" readonly={true} firstDayOfWeek={1} workHours={{
+                          highlight: true, start: '8:00', end: '19:00'
+                      }}>
+                          <Inject services={[Day, Week, WorkWeek, Month, Agenda]}/>
+                      </ScheduleComponent>
+                  </Route>
+                  <Route path="/">
+                      <Test/>
+                  </Route>
+              </Switch>
+          </div>
+
       </header>
+        </Router>
     </div>
   );
 }
