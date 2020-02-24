@@ -24,6 +24,7 @@ import { add_data,delete_data } from "../redux/reducers/actions";
 import { useDispatch,useSelector } from 'react-redux'
 import { createSelector } from 'reselect'
 
+import Logo from '../Calendar.png';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -155,7 +156,7 @@ const history=useHistory();
         return (
 
             <Grid container spacing={1}  alignItems="flex-start">
-
+                <Grid item xs={12}><img src={Logo} alt='Logo' className='Icon_Logo'/></Grid>
                 <Grid item xs={4}>
                     <FormControl variant="outlined" className={classes.formControl}>
                         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
