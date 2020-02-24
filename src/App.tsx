@@ -1,9 +1,10 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import EDT from './components/EDT';
 import Test from './components/testtest';
-
-
+import { Provider } from "react-redux";
+import store from "./redux/store";
 import {
     BrowserRouter as Router,
     Switch,
@@ -16,22 +17,31 @@ import { ScheduleComponent, Day, Week, WorkWeek, Month, Agenda, Inject } from '@
 
 
 
+
 const App = () => {
+
+    let data: object [] = [{
+
+            Id: 1,
+            Subject: 'Meeting - 1',
+            StartTime: new Date(2020, 2, 24, 10, 0),
+            EndTime: new Date(2020, 2, 24, 12, 30),
+            IsAllDay: false
+
+}];
+    console.log('data', data);
 
 
   return (
-
+<Provider store={store}>
     <div className="App">
+
         <Router>
       <header className="App-header">
           <div>
               <Switch>
                   <Route path="/users">
-                      <ScheduleComponent   startHour="7:00" endHour="20:00" readonly={true} firstDayOfWeek={1} workHours={{
-                          highlight: true, start: '8:00', end: '19:00'
-                      }}>
-                          <Inject services={[Day, Week, WorkWeek, Month, Agenda]}/>
-                      </ScheduleComponent>
+                      <EDT/>
                   </Route>
                   <Route path="/">
                       <Test/>
@@ -42,6 +52,7 @@ const App = () => {
       </header>
         </Router>
     </div>
+</Provider>
   );
 }
 
