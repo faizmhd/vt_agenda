@@ -18,6 +18,11 @@
   pointer-events: none;
 }
 
+.Title_class{
+  color:black;
+  font-family : "Comic Sans MS", cursive, sans-serif;
+}
+
 .Icon_Logo {
   height: 100px;
 }

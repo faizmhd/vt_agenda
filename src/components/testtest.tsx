@@ -156,6 +156,7 @@ const history=useHistory();
         return (
 
             <Grid container spacing={1}  alignItems="flex-start">
+                <Grid item xs={12}><h1 className='Title_class'>YD Agenda</h1></Grid>
                 <Grid item xs={12}><img src={Logo} alt='Logo' className='Icon_Logo'/></Grid>
                 <Grid item xs={4}>
                     <FormControl variant="outlined" className={classes.formControl}>
