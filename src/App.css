@@ -18,6 +18,15 @@
   pointer-events: none;
 }
 
+.Title_class{
+  color:black;
+  font-family : "Comic Sans MS", cursive, sans-serif;
+}
+
+.Icon_Logo {
+  height: 100px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -25,7 +34,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #ffffff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
