@@ -60,6 +60,7 @@
     "babel-preset-react-app": "^3.1.2",
     "browserslist": "^4.8.6",
     "cldr-data": "^36.0.0",
+    "color-convert": "^2.0.1",
     "datejs": "^1.0.0-rc3",
     "eslint": "^6.8.0",
     "eslint-plugin-flowtype": "^4.6.0",
@@ -73,7 +74,9 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.3.1",
     "redux": "^4.0.5",
+    "redux-persist": "^6.0.0",
     "reselect": "^4.0.0",
+    "rgb-hex": "^3.0.0",
     "sass": "^1.25.0",
     "typescript": "^3.7.5"
   },

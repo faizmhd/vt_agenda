@@ -16,6 +16,7 @@ import {
     Link,
     useHistory
 } from 'react-router-dom';
+
 import { ScheduleComponent, Day, Week, WorkWeek, Month, Agenda, Inject } from '@syncfusion/ej2-react-schedule';
 
 import { connect } from "react-redux";
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function Example() {
+    let convert = require('color-convert');
+    const rgbHex = require('rgb-hex');
+
     //const todo = useSelector(state => state.DataEDT);
 const history=useHistory();
     const dispatch = useDispatch();
@@ -86,23 +90,52 @@ const history=useHistory();
         firebase.firestore().collection('Data_EDT').where('GROUPES','array-contains-any',[NiveauUn,NiveauDeux,NiveauTrois]).get()
             .then((snapshot)=> {
                     let elements: any[] = [];
+                    let lieu='';
+                    let prof='';
+                    let couleur;
+                let date1;
+                let date;
                     snapshot.forEach(doc => {
-                        let date = new Date(doc.data().DateDebut);
-                        let date1 = new Date(doc.data().DateFin);
+
+                        if ((doc.data().ZoneInfo.NOM===undefined)||(doc.data().SalleInfo.Nom===undefined)){
+                            lieu='';
+                        }
+                        else {
+                            lieu = doc.data().ZoneInfo.NOM+' : '+doc.data().SalleInfo.Nom;
+                        };
+                         date = new Date(doc.data().DateDebut);
+                         date1 = new Date(doc.data().DateFin);
+
+                        if (doc.data().Couleur===undefined){
+                            couleur='';
+                            console.log('1');
+                        }
+                        else {
+                           couleur='#'+convert.rgb.hex(parseInt(doc.data().Couleur.substring(0,2)),  parseInt(doc.data().Couleur.substring(2,5)), parseInt(doc.data().Couleur.substring(5)));
+                           console.log(couleur);
+                        };
+
+                      //  console.log('couleur',doc.data().COULEUR.substring(2,5),  doc.data().COULEUR.substring(2,5), doc.data().COULEUR.substring(5));
                         elements.push({
                             Id: doc.id,
                             Subject: doc.data().MatiereInfoBis.NOM,
                             StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(),date.getHours(),date.getMinutes()),
                             EndTime: new Date(date1.getFullYear(), date1.getMonth(), date1.getDate(),date1.getHours(),date1.getMinutes()),
-                            IsAllDay: false
+                            IsAllDay: false,
+                            Location: lieu,
+                            Description:doc.data().TypeActivite.ALIAS +' / '+ doc.data().ProfIdentite.Nom+' '+doc.data().ProfIdentite.Prenom,
+                            Color:couleur
+
                         });
                     });
                     console.log("elements", elements[0]);
                     dispatch(add_data(elements));
-                    console.log('storeTEST',store.getState().DataEDT);
+                    localStorage.setItem('NiveauUn',NiveauUn);
+                localStorage.setItem('NiveauDeux',NiveauDeux);
+                localStorage.setItem('NiveauTrois',NiveauTrois);
                      history.replace('/users');
 
-                }
+                     }
             )};
         const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
             // alert(JSON.stringify(event.target.value));
@@ -264,16 +297,7 @@ const history=useHistory();
                         </Button>
 
                 </Grid>
-                {valueSeance && (
 
-                    <ul>
-                        {valueSeance.docs.map(doc => {
-                            return  <li >{doc.data().MatiereInfoBis.NOM}//
-                                {doc.data().SalleInfo.Nom}//{doc.data().ZoneInfo.NOM}//{doc.data().TypeActivite.ALIAS}
-                            </li>
-                        })}
-                    </ul>
-                )}
 
 
                 {/*   <ScheduleComponent workHours={{

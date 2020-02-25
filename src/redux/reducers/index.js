@@ -1,7 +1,7 @@
 //import { ADD_TODO, TOGGLE_TODO } from "../actionTypes";
 import {add_data,delete_data} from "./actions"
  const initialState = {
-    DataEDT: [1]
+    DataEDT: []
 
 };
 const ADD_DATA="ADD_DATA" ;

@@ -4,7 +4,9 @@ import './App.css';
 import EDT from './components/EDT';
 import Test from './components/testtest';
 import { Provider } from "react-redux";
-import store from "./redux/store";
+import {store,persistor} from "./redux/store";
+
+import { PersistGate } from 'redux-persist/integration/react'
 import {
     BrowserRouter as Router,
     Switch,
@@ -34,6 +36,7 @@ const App = () => {
 
   return (
 <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
     <div className="App">
 
         <Router>
@@ -52,6 +55,7 @@ const App = () => {
       </header>
         </Router>
     </div>
+    </PersistGate>
 </Provider>
   );
 }

@@ -50,7 +50,7 @@ function main(){
    // NonSuperGroupes();
    // SeancesFormat();
     //EnseignementFormat();
-
+   // HoraireCours();
      //calendrierData1();
     //calendrierDataProfInfo();//fait
     //calendrierDataSalleInfo();//fait
@@ -60,9 +60,44 @@ function main(){
    // HoraireCours(); fait
     //AjoutTypeActivite(); fait
    // AjoutNomActivite(); fait
+    AjoutCouleur();
 };
 //EDT par salle Zone>Salle>DATA EDT
 //EDT par PROF
+
+function AjoutCouleur() {
+    db.collection("Data_EDT")
+        //.limit(1)
+        .get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                // console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    CodeActivite:""
+                }).then(()=>{
+                    db.collection("ENSEIGNEMENTS").where("CODE","==",doc.data().ENSEIGNEMENT)
+                        //.limit(1)
+                        .get().then(
+                        snapshotbis=>{
+                            //console.log('2');
+                            snapshotbis.forEach((el)=>{
+                                // console.log(el.data());
+
+                                db.collection("Data_EDT").doc(doc.id).update({
+                                    //ajouter a la liste des profs
+                                    //ne pas ajouter que le dernier prof
+                                    Couleur:el.data().COULEUR
+
+                                });
+                            });
+                        }
+                    );
+                })
+            });
+        }
+    );
+};
 function AjoutNomActivite() {
     db.collection("Data_EDT")
         //.limit(1)
@@ -133,15 +168,13 @@ function AjoutTypeActivite() {
     );
 };
 function HoraireCours(){
-    db.collection("Data_EDT")
-        //.limit(1)
-        .get().then(
+    db.collection("Data_EDT").get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
                 // console.log('1');
+
                 db.collection("Data_EDT").doc(doc.id).update({
-                    DateDebut:datePArser(doc.data().DATE,doc.data().HEURE),
-                    DateFin:dateFin(doc.data().DATE,doc.data().HEURE,doc.data().DUREE)
+                    ProfIdentite: doc.data().ProfIdentite[0]||{Nom:'',Prenom:''}
                 })
             });
         }
