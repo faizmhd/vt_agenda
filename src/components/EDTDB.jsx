@@ -36,7 +36,12 @@ class EDTDB extends React.Component {
             height:'100%',
            width:'100%'
        };
-        return (<div className="e-appointment" style={divStyle}>{props.Subject.toString()}</div>);
+        return (<div className="e-appointment" style={divStyle}>
+            <div class="e-subject">{props.Subject.toString()}</div>
+            <div class="e-time">{props.StartTime.getHours().toString() + ':' + props.StartTime.getMinutes().toString() +
+            ' - ' + props.EndTime.getHours().toString() + ':' + props.EndTime.getMinutes().toString()}</div>
+            <div class="e-location">{props.Location.toString()}</div>
+        </div>);
     }
     render() {
         return (<ScheduleComponent cssClass='excel-export'  height='auto' width='auto' id='schedule'
