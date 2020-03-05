@@ -36,7 +36,7 @@ class EDTDB extends React.Component {
             height:'100%',
            width:'100%'
        };
-        return (<div  style={divStyle}>{props.Subject.toString()}</div>);
+        return (<div className="e-appointment" style={divStyle}>{props.Subject.toString()}</div>);
     }
     render() {
         return (<ScheduleComponent cssClass='excel-export'  height='auto' width='auto' id='schedule'
@@ -45,7 +45,7 @@ class EDTDB extends React.Component {
                                    startHour="7:00" endHour="21:00" readonly={true}
                                    selectedDate= {new Date(2013, 8, 24)}
                                    eventSettings={{ dataSource: this.props.Data,template:this.cellTemplate.bind(this)}} actionBegin={this.onActionBegin.bind(this)}
-                                   colorField='Color'
+                                   colorField={this.props.Color}
                                    firstDayOfWeek={1} workHours={{
             highlight: true, start: '8:00', end: '20:00'
         }}
