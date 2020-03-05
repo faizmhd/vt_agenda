@@ -26,11 +26,6 @@ export default function EDT() {
       //  alert('test');
     };
 
-    function  cellTemplate(props:any) {
-        console.log('test',props);
-        return  '<div>'+props+'</div>'
-    };
-
     return (
         <Grid container spacing={1} >
             <ScheduleComponent
