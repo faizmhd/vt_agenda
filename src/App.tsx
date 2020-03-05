@@ -2,7 +2,9 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import EDT from './components/EDT';
+import EDTDB from './components/EDTDB';
 import Test from './components/testtest';
+import Detail from "./components/Detail";
 import { Provider } from "react-redux";
 import {store,persistor} from "./redux/store";
 
@@ -43,8 +45,14 @@ const App = () => {
       <header className="App-header">
           <div>
               <Switch>
+                  <Route path="/detail">
+                      <Detail/>
+                  </Route>
                   <Route path="/users">
-                      <EDT/>
+                      <EDT></EDT>
+                  </Route>
+                  <Route path="/Test">
+                      <EDTDB></EDTDB>
                   </Route>
                   <Route path="/">
                       <Test/>
@@ -58,6 +66,6 @@ const App = () => {
     </PersistGate>
 </Provider>
   );
-}
+};
 
 export default App;

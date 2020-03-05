@@ -44,7 +44,7 @@ export default function Example() {
     const rgbHex = require('rgb-hex');
 
     //const todo = useSelector(state => state.DataEDT);
-const history=useHistory();
+    const history=useHistory();
     const dispatch = useDispatch();
     const classes = useStyles();
     const [NiveauUn, setNiveauUn] = useState('');
@@ -90,252 +90,212 @@ const history=useHistory();
         // alert(JSON.stringify(event.target.value));
         firebase.firestore().collection('Data_EDT').where('GROUPES','array-contains-any',[NiveauUn,NiveauDeux,NiveauTrois]).get()
             .then((snapshot)=> {
-                    let elements: any[] = [];
-                    let lieu='';
-                    let prof='';
-                    let couleur;
+                let elements: any[] = [];
+                let lieu='';
+                let prof='';
+                let couleur;
                 let date1;
                 let date;
-                    snapshot.forEach(doc => {
-
-                        if ((doc.data().ZoneInfo.NOM===undefined)||(doc.data().SalleInfo.Nom===undefined)){
-                            lieu='';
-                        }
-                        else {
-                            lieu = doc.data().ZoneInfo.NOM+' : '+doc.data().SalleInfo.Nom;
-                        };
-                         date = new Date(doc.data().DateDebut);
-                         date1 = new Date(doc.data().DateFin);
-
-                        if (doc.data().Couleur===undefined){
-                            couleur='';
-                            console.log('1');
-                        }
-                        else {
-                           couleur='#'+convert.rgb.hex(parseInt(doc.data().Couleur.substring(0,2)),  parseInt(doc.data().Couleur.substring(2,5)), parseInt(doc.data().Couleur.substring(5)));
-                           console.log(couleur);
-                        };
-
-                      //  console.log('couleur',doc.data().COULEUR.substring(2,5),  doc.data().COULEUR.substring(2,5), doc.data().COULEUR.substring(5));
-                        elements.push({
-                            Id: doc.id,
-                            Subject: doc.data().MatiereInfoBis.NOM,
-                            StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(),date.getHours(),date.getMinutes()),
-                            EndTime: new Date(date1.getFullYear(), date1.getMonth(), date1.getDate(),date1.getHours(),date1.getMinutes()),
-                            IsAllDay: false,
-                            Location: lieu,
-                            Description:doc.data().TypeActivite.ALIAS +' / '+ doc.data().ProfIdentite.Nom+' '+doc.data().ProfIdentite.Prenom,
-                            Color:couleur
-
-                        });
+                snapshot.forEach(doc => {
+                    if ((doc.data().ZoneInfo.NOM===undefined)||(doc.data().SalleInfo.Nom===undefined)){
+                        lieu='';
+                    }
+                    else {
+                        lieu = doc.data().ZoneInfo.NOM+' : '+doc.data().SalleInfo.Nom;
+                    }
+                    date = new Date(doc.data().DateDebut);
+                    date1 = new Date(doc.data().DateFin);
+                    if (doc.data().Couleur===undefined){
+                        couleur='';
+                        console.log('1');
+                    }
+                    else {
+                        couleur='#'+convert.rgb.hex(parseInt(doc.data().Couleur.substring(0,2)),  parseInt(doc.data().Couleur.substring(2,5)), parseInt(doc.data().Couleur.substring(5)));
+                        console.log(couleur);
+                    }
+                    //  console.log('couleur',doc.data().COULEUR.substring(2,5),  doc.data().COULEUR.substring(2,5), doc.data().COULEUR.substring(5));
+                    elements.push({
+                        Id: doc.id,
+                        Subject: doc.data().MatiereInfoBis.NOM,
+                        StartTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(),date.getHours(),date.getMinutes()),
+                        EndTime: new Date(date1.getFullYear(), date1.getMonth(), date1.getDate(),date1.getHours(),date1.getMinutes()),
+                        IsAllDay: false,
+                        Location: lieu,
+                        Description:doc.data().TypeActivite.ALIAS +' / '+ doc.data().ProfIdentite.Nom+' '+doc.data().ProfIdentite.Prenom,
+                        Color:couleur
                     });
-                    console.log("elements", elements[0]);
-                    dispatch(add_data(elements));
-                    localStorage.setItem('NiveauUn',NiveauUn);
+                });
+                console.log("elements", elements[0]);
+                dispatch(add_data(elements));
+                localStorage.setItem('NiveauUn',NiveauUn);
                 localStorage.setItem('NiveauDeux',NiveauDeux);
                 localStorage.setItem('NiveauTrois',NiveauTrois);
-                     history.replace('/users');
-
-                     }
+                history.replace('/users');
+                }
             )};
-        const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-            // alert(JSON.stringify(event.target.value));
-            setNiveauUn(event.target.value as string);
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        // alert(JSON.stringify(event.target.value));
+        setNiveauUn(event.target.value as string);
+    };
+    const handleChangebis = (event: React.ChangeEvent<{ value: unknown }>) => {
+        // alert(JSON.stringify(event.target.value));
+        setNiveauDeux(event.target.value as string);
+    };
+    const handleChangeTrois = (event: React.ChangeEvent<{ value: unknown }>) => {
+        // alert(JSON.stringify(event.target.value));
+        setNiveauTrois(event.target.value as string);
+    };
+    var Itemlist: any[]=['L1','L2','L3','M1','M2'];
+    const listItem= Itemlist.map((niveau)=>{
+        return  <MenuItem value={niveau}>{niveau}</MenuItem>
+    });
+    /*
+    faire la fonction directement dans le rendu
+    essayer
+    const dataScheduler=valueSeance.docs.map(
+        (doc)=>{
+            firebase.firestore().collection("ENSEIGNEMENTS").where('CODE','==',doc.data().ENSEIGNEMENT).get().then(
+                (snapshot)=>{
+                    snapshot.forEach((el)=>{
+                        return{
+                            Id: doc.id,
+                            Subject:  el.data().ALIAS,
+                            StartTime: datePArser(doc.data().DATE,doc.data().HEURE),
+                            EndTime: dateFin(doc.data().DATE,doc.data().HEURE,doc.data().DUREE),
+                            IsAllDay: false,
+                            Status: 'Completed',
+                            Priority: 'High',
+                            Couleur:doc.data().COULEUR
+                        }
+                    })
 
-        };
-        const handleChangebis = (event: React.ChangeEvent<{ value: unknown }>) => {
-            // alert(JSON.stringify(event.target.value));
-            setNiveauDeux(event.target.value as string);
+                }
+            );
 
-        };
-        const handleChangeTrois = (event: React.ChangeEvent<{ value: unknown }>) => {
-            // alert(JSON.stringify(event.target.value));
-            setNiveauTrois(event.target.value as string);
-
-        };
-
-        var Itemlist: any[]=['L1','L2','L3','M1','M2'];
-        const listItem= Itemlist.map((niveau)=>{
-            return  <MenuItem value={niveau}>{niveau}</MenuItem>
-        });
-        /*
-        faire la fonction directement dans le rendu
-        essayer
-        const dataScheduler=valueSeance.docs.map(
-            (doc)=>{
-                firebase.firestore().collection("ENSEIGNEMENTS").where('CODE','==',doc.data().ENSEIGNEMENT).get().then(
-                    (snapshot)=>{
-                        snapshot.forEach((el)=>{
-                            return{
-                                Id: doc.id,
-                                Subject:  el.data().ALIAS,
-                                StartTime: datePArser(doc.data().DATE,doc.data().HEURE),
-                                EndTime: dateFin(doc.data().DATE,doc.data().HEURE,doc.data().DUREE),
-                                IsAllDay: false,
-                                Status: 'Completed',
-                                Priority: 'High',
-                                Couleur:doc.data().COULEUR
-                            }
-                        })
-
-                    }
-                );
-
-            }
-        ) ;
-        */
+        }
+    ) ;
+    */
 
 
-        return (
-
-            <Grid container spacing={1}  alignItems="flex-start">
-                <Grid item xs={12}><h1 className='Title_class'>YD Agenda</h1></Grid>
-                <Grid item xs={12}><img src={Logo} alt='Logo' className='Icon_Logo'/></Grid>
-                <Grid item xs={4}>
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-                            Niveau
-                        </InputLabel>
-
-
-                        {value && (
-
-
-                            <Select
-                                labelId="demo-simple-select-outlined-label"
-                                id="demo-simple-select-outlined"
-                                value={NiveauUn}
-                                onChange={handleChange}
-                                labelWidth={labelWidth}
-                            >
-                                <MenuItem value="">
-                                    <em></em>
-                                </MenuItem>
-                                {value.docs.map(doc => {
-                                    return  <MenuItem value={doc.data().CODE}>{doc.data().NOM}</MenuItem>
-                                })}
-                            </Select>
-                        )}
-
-
-                        {error && <strong>Error: {JSON.stringify(error)}</strong>}
-                        {loading && <span>Collection: Loading...</span>}
-
-                        {NiveauUn}
-                    </FormControl>
-                </Grid>
-                <Grid item xs={4}>
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-                            Niveau
-                        </InputLabel>
-
-
-                        {valueDeux && (
-
-
-                            <Select
-                                labelId="demo-simple-select-outlined-label"
-                                id="demo-simple-select-outlined"
-                                value={NiveauDeux}
-                                onChange={handleChangebis}
-                                labelWidth={labelWidth}
-                            >
-                                <MenuItem value="">
-                                    <em></em>
-                                </MenuItem>
-                                {valueDeux.docs.map(doc => {
-                                    return  <MenuItem value={doc.data().CODE}>{doc.data().NOM}</MenuItem>
-                                })}
-                            </Select>
-                        )}
-
-
-                        {errorDeux && <strong>Error: {JSON.stringify(error)}</strong>}
-                        {loadingDeux && <span>Collection: Loading...</span>}
-                        {NiveauDeux}
-                    </FormControl>
-                </Grid>
-                <Grid item xs={4}>
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
-                            Niveau
-                        </InputLabel>
-
-
-                        {valueTrois && (
-
-
-                            <Select
-                                labelId="demo-simple-select-outlined-label"
-                                id="demo-simple-select-outlined"
-                                value={NiveauTrois}
-                                onChange={handleChangeTrois}
-                                labelWidth={labelWidth}
-                            >
-                                <MenuItem value="">
-                                    <em></em>
-                                </MenuItem>
-                                {valueTrois.docs.map(doc => {
-                                    return  <MenuItem value={doc.data().CODE}>{doc.data().NOM}</MenuItem>
-                                })}
-                            </Select>
-                        )}
-
-
-                        {errorTrois && <strong>Error: {JSON.stringify(error)}</strong>}
-                        {loadingTrois && <span>Collection: Loading...</span>}
-                        {NiveauTrois}
-
-                    </FormControl>
-                </Grid>
-                <Grid item   direction="row"
-                      justify="center"
-                      alignItems="center"
-                      xs={12}>
-
-                        <Button variant="contained" color="primary" onClick={GetDonnees}>
-                            Valider
-                        </Button>
-
-                </Grid>
-
-
-
-                {/*   <ScheduleComponent workHours={{
+    return (
+        <Grid container spacing={1}  alignItems="flex-start">
+            <Grid item xs={12}><h1 className='Title_class'>YD Agenda</h1></Grid>
+            <Grid item xs={12}><img src={Logo} alt='Logo' className='Icon_Logo'/></Grid>
+            <Grid item xs={4}>
+                <FormControl variant="outlined" className={classes.formControl}>
+                    <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
+                        Niveau
+                    </InputLabel>
+                    {value && (
+                        <Select
+                            labelId="demo-simple-select-outlined-label"
+                            id="demo-simple-select-outlined"
+                            value={NiveauUn}
+                            onChange={handleChange}
+                            labelWidth={labelWidth}
+                        >
+                            <MenuItem value="">
+                                <em></em>
+                            </MenuItem>
+                            {value.docs.map(doc => {
+                                return  <MenuItem value={doc.data().CODE}>{doc.data().NOM}</MenuItem>
+                            })}
+                        </Select>
+                    )}
+                    {error && <strong>Error: {JSON.stringify(error)}</strong>}
+                    {loading && <span>Collection: Loading...</span>}
+                    {NiveauUn}
+                </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+                <FormControl variant="outlined" className={classes.formControl}>
+                    <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
+                        Niveau
+                    </InputLabel>
+                    {valueDeux && (
+                        <Select
+                            labelId="demo-simple-select-outlined-label"
+                            id="demo-simple-select-outlined"
+                            value={NiveauDeux}
+                            onChange={handleChangebis}
+                            labelWidth={labelWidth}
+                        >
+                            <MenuItem value="">
+                                <em></em>
+                            </MenuItem>
+                            {valueDeux.docs.map(doc => {
+                                return  <MenuItem value={doc.data().CODE}>{doc.data().NOM}</MenuItem>
+                            })}
+                        </Select>
+                    )}
+                    {errorDeux && <strong>Error: {JSON.stringify(error)}</strong>}
+                    {loadingDeux && <span>Collection: Loading...</span>}
+                    {NiveauDeux}
+                </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+                <FormControl variant="outlined" className={classes.formControl}>
+                    <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
+                        Niveau
+                    </InputLabel>
+                    {valueTrois && (
+                        <Select
+                            labelId="demo-simple-select-outlined-label"
+                            id="demo-simple-select-outlined"
+                            value={NiveauTrois}
+                            onChange={handleChangeTrois}
+                            labelWidth={labelWidth}
+                        >
+                            <MenuItem value="">
+                                <em></em>
+                            </MenuItem>
+                            {valueTrois.docs.map(doc => {
+                                return  <MenuItem value={doc.data().CODE}>{doc.data().NOM}</MenuItem>
+                            })}
+                        </Select>
+                    )}
+                    {errorTrois && <strong>Error: {JSON.stringify(error)}</strong>}
+                    {loadingTrois && <span>Collection: Loading...</span>}
+                    {NiveauTrois}
+                </FormControl>
+            </Grid>
+            <Grid item   direction="row"
+                  justify="center"
+                  alignItems="center"
+                  xs={12}>
+                <Button variant="contained" color="primary" onClick={GetDonnees}>
+                    Valider
+                </Button>
+            </Grid>
+            {/*   <ScheduleComponent workHours={{
         highlight: true, start: '8:00', end: '19:00'
     }}>
         <Inject services={[Day, Week, WorkWeek, Month, Agenda]}/>
     </ScheduleComponent>*/}
 
-            </Grid>
-
-        );
+        </Grid>
+    );
+}
+function datePArser(date:string,heure:string) {
+    if (heure.length===3) {
+        heure = '0' + heure;
     }
-
-    function datePArser(date:string,heure:string) {
-        if (heure.length===3) {
-            heure = '0' + heure;
-        }
-        let VarSplit=date.split('-');
-        let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]), parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3])).toString();
-        return DateDebut;
-        // console.log(date + '  ' + heure);
-
+    let VarSplit=date.split('-');
+    let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]), parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3])).toString();
+    return DateDebut;
+    // console.log(date + '  ' + heure);
 //return true
+}
+function dateFin(date:string,heure:string,min:string) {
+    if (heure.length===3) {
+        heure = '0' + heure;
     }
-    function dateFin(date:string,heure:string,min:string) {
-        if (heure.length===3) {
-            heure = '0' + heure;
-        }
-        let VarSplit=date.split('-');
-        let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]), parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3]));
-        let DateFin=add_minutes(DateDebut,parseInt(min)).toString();
-        return DateFin;
-
-    }
-
-    var add_minutes =  function (dt:Date, minutes:number) {
-        return new Date(dt.getTime() + minutes*60000);
-    };
+    let VarSplit=date.split('-');
+    let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]), parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3]));
+    let DateFin=add_minutes(DateDebut,parseInt(min)).toString();
+    return DateFin;
+}
+var add_minutes =  function (dt:Date, minutes:number) {
+    return new Date(dt.getTime() + minutes*60000);
+};
 

@@ -1,7 +1,7 @@
 const express=require('express');
 const app=express();
 const router=express.Router();
-const PORT = process.env.PORT || 2000
+const PORT = process.env.PORT || 2000;
 // pour middleware app.use
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
@@ -60,11 +60,26 @@ function main(){
    // HoraireCours(); fait
     //AjoutTypeActivite(); fait
    // AjoutNomActivite(); fait
-    AjoutCouleur();
-};
+   // AjoutCouleur();
+    CodeMatiere();
+}
 //EDT par salle Zone>Salle>DATA EDT
 //EDT par PROF
-
+function CodeMatiere() {
+    db.collection("Data_EDT")
+        //.limit(1)
+        .get().then(
+        (snapshot) => {
+            snapshot.forEach((doc) => {
+                // console.log('1');
+                db.collection("Data_EDT").doc(doc.id).update({
+                    //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
+                    CODE_MATIERE:doc.data().EnseignementInfo[0].CODE_MATIERE
+                });
+            });
+        }
+    );
+}
 function AjoutCouleur() {
     db.collection("Data_EDT")
         //.limit(1)
@@ -83,12 +98,10 @@ function AjoutCouleur() {
                             //console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
                                     Couleur:el.data().COULEUR
-
                                 });
                             });
                         }
@@ -97,7 +110,7 @@ function AjoutCouleur() {
             });
         }
     );
-};
+}
 function AjoutNomActivite() {
     db.collection("Data_EDT")
         //.limit(1)
@@ -116,7 +129,6 @@ function AjoutNomActivite() {
                             //console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
@@ -124,7 +136,6 @@ function AjoutNomActivite() {
                                         NOM:el.data().NOM,
                                         ALIAS:el.data().ALIAS
                                     }
-
                                 });
                             });
                         }
@@ -133,7 +144,7 @@ function AjoutNomActivite() {
             });
         }
     );
-};
+}
 function AjoutTypeActivite() {
     db.collection("Data_EDT")
         //.limit(1)
@@ -152,12 +163,10 @@ function AjoutTypeActivite() {
                             //console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
                                     CodeActivite:el.data().TYPE_ACTIVITE
-
                                 });
                             });
                         }
@@ -166,13 +175,12 @@ function AjoutTypeActivite() {
             });
         }
     );
-};
+}
 function HoraireCours(){
     db.collection("Data_EDT").get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
                 // console.log('1');
-
                 db.collection("Data_EDT").doc(doc.id).update({
                     ProfIdentite: doc.data().ProfIdentite[0]||{Nom:'',Prenom:''}
                 })
@@ -185,22 +193,21 @@ function HoraireCours(){
 function calendrierDataZoneInfo(){
     db.collection("Data_EDT")
         //.limit(1)
-         .get().then(
+        .get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
-               // console.log('1');
+                // console.log('1');
                 db.collection("Data_EDT").doc(doc.id).update({
                     //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
                     ZoneInfo:""
                 }).then(()=>{
                     db.collection("ZONES_DE_SALLES").where("CODE","==",doc.data().SalleInfo.CODE_ZONE)
                         //.limit(1)
-                    .get().then(
+                        .get().then(
                         snapshotbis=>{
                             //console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
@@ -223,19 +230,18 @@ function calendrierDataMatiereInfo(){
         .get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
-               // console.log('1');
+                // console.log('1');
                 db.collection("Data_EDT").doc(doc.id).update({
                     //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
                     MatiereInfoBis:[]
                 }).then(()=>{
                     db.collection("MATIERES").where("CODE","==",doc.data().EnseignementInfo[0].CODE_MATIERE)
                         //.limit(1)
-                    .get().then(
+                        .get().then(
                         snapshotbis=>{
-                          //  console.log('2');
+                            //  console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
@@ -256,7 +262,7 @@ function calendrierDataMatiereInfo(){
 function calendrierData1() {
     //
     db.collection("SEANCES")
-       // .limit(1)
+        // .limit(1)
         .get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
@@ -272,7 +278,7 @@ function calendrierData1() {
             })
         }
     )
-};
+}
 function calendrierDataEnseignementInfo(){
     db.collection("Data_EDT").get().then(
         (snapshot) => {
@@ -283,13 +289,11 @@ function calendrierDataEnseignementInfo(){
                     EnseignementInfo:[]
                 }).then(()=>{
                     db.collection("ENSEIGNEMENTS").where("CODE","==",doc.data().ENSEIGNEMENT)
-
                         .get().then(
                         snapshotbis=>{
                             console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
@@ -321,12 +325,10 @@ function calendrierDataSalleInfo(){
                 }).then(()=>{
                     db.collection("SALLES").where("CODE","==",doc.data().SALLE)
                         //.limit(1)
-                    .get().then(
+                        .get().then(
                         snapshotbis=>{
-
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
@@ -351,20 +353,18 @@ function calendrierDataProfInfo() {
         .get().then(
         (snapshot) => {
             snapshot.forEach((doc) => {
-               // console.log('1');
+                // console.log('1');
                 db.collection("Data_EDT").doc(doc.id).update({
                     //ProfIdentite:admin.firestore.FieldValue.arrayRemove()
-
                     ProfIdentite:[]
                 }).then(()=>{
                     db.collection("PROFESSEURS").where("CODE","==",doc.data().PROF[0])
                         //.limit(1)
                         .get().then(
                         snapshotbis=>{
-                           // console.log('2');
+                            // console.log('2');
                             snapshotbis.forEach((el)=>{
                                 // console.log(el.data());
-
                                 db.collection("Data_EDT").doc(doc.id).update({
                                     //ajouter a la liste des profs
                                     //ne pas ajouter que le dernier prof
@@ -380,23 +380,20 @@ function calendrierDataProfInfo() {
             });
         }
     )
-};
+}
 function EnseignementFormat() {
     db.collection("ENSEIGNEMENTS").limit(1).get().then(
         (snapshot)=>{
             snapshot.forEach((document)=>{
                 try {
-
-                        db.collection("ENSEIGNEMENTS").doc(document.id).update({
-                            GROUPE: document.data().LES_RESSOURCES.UNE_RESSOURCE.filter((el) => {
-                                return el.TYPE === 'GROUPE';
-                            }).map((el)=>{
-                                return el.CODE_RESSOURCE
-                            })
+                    db.collection("ENSEIGNEMENTS").doc(document.id).update({
+                        GROUPE: document.data().LES_RESSOURCES.UNE_RESSOURCE.filter((el) => {
+                            return el.TYPE === 'GROUPE';
+                        }).map((el)=>{
+                            return el.CODE_RESSOURCE
                         })
-
-                }catch(err){
-                   // console.log(document.data());
+                    })
+                }catch(err){// console.log(document.data());
                 }
                 //console.log(document.data().LES_RESSOURCES.UNE_RESSOURCE!==undefined);
              /*   if(document.data().LES_RESSOURCES.UNE_RESSOURCE!==undefined) {
@@ -408,7 +405,6 @@ function EnseignementFormat() {
                 } */
             })
         }
-
     )
 }
 
@@ -421,8 +417,7 @@ function SeancesFormat() {
     db.collection("SEANCES").get().then(
         snapshot=>{
             snapshot.forEach(document=>{
-
-               db.collection("SEANCES").doc(document.id).update(
+                db.collection("SEANCES").doc(document.id).update(
                     {
                         PROF:document.data().LES_RESSOURCES.filter((el)=>{
                             return el.TYPE==='PROF'
@@ -442,12 +437,9 @@ function SeancesFormat() {
                     }
                 )
             });
-
             console.log('fin');
         }
-
     );
-
 }
 
 function NonSuperGroupes() {
@@ -460,18 +452,15 @@ function NonSuperGroupes() {
                         ID:document.id,
                         Tab:document.data().LES_SUPER_GROUPES.UN_CODE_SUPER_GROUPE
                     });
-                };
+                }
             });
-
-
-             tabResult.forEach((el)=>{
-                 db.collection("GROUPES").doc(el.ID).update(
-                     {
-                         LES_SUPER_GROUPES:el.Tab
-                     }
-                 )
-             });
-             console.log('fin');
+            tabResult.forEach((el)=>{
+                db.collection("GROUPES").doc(el.ID).update(
+                    {
+                        LES_SUPER_GROUPES:el.Tab
+                    })
+            });
+            console.log('fin');
         }
 
     );
@@ -479,22 +468,21 @@ function NonSuperGroupes() {
 }
 function SuperGroupe() {
     var tabResult=[];
-  db.collection("GROUPES").get().then(
-      snapshot=>{
-          snapshot.forEach(document=>{
-              if (document.data().LES_SUPER_GROUPES===undefined){
-                  tabResult.push(document);
-              };
-          });
-          tabResult.forEach(document =>{
-              console.log(document.data().NOM+'  '+document.data().CODE);
-              db.collection('SUPER_GROUPES').doc().set(document.data());
-          });
-      }
-
+    db.collection("GROUPES").get().then(
+        snapshot=>{
+            snapshot.forEach(document=>{
+                if (document.data().LES_SUPER_GROUPES===undefined){
+                    tabResult.push(document);
+                }
+            });
+            tabResult.forEach(document =>{
+                console.log(document.data().NOM+'  '+document.data().CODE);
+                db.collection('SUPER_GROUPES').doc().set(document.data());
+            });
+        }
     );
 //return tabResult;
-  // while (query===undefined);
+// while (query===undefined);
 }
 
 function Groupes(SG) {
@@ -504,20 +492,18 @@ function Groupes(SG) {
             snapshot.forEach(document=>{
                 if (document.data().LES_SUPER_GROUPES!==undefined){
                     tabResult.push(document);
-                };
+                }
             });
             var GroupesFinal=tabResult.reduce((acc,currentValue)=>{
-              // console.log(currentValue.data().LES_SUPER_GROUPES.UN_CODE_SUPER_GROUPE.includes(SG)+'==='+SG);
+                // console.log(currentValue.data().LES_SUPER_GROUPES.UN_CODE_SUPER_GROUPE.includes(SG)+'==='+SG);
                 if (currentValue.data().LES_SUPER_GROUPES.UN_CODE_SUPER_GROUPE.includes(SG)){
                     acc.push(currentValue.data().NOM);
-
                 }
                 return acc
             },[]);
             console.log(GroupesFinal);
             return GroupesFinal;
         }
-
     );
 
 }
@@ -528,14 +514,12 @@ function SeancesGroupes(CG){
     db.collection("SEANCES").where('LES_RESSOURCES','==','GROUPE').limit(10).get().then(
         snapshot=>{
             snapshot.forEach(doc => {
-
                 if (doc.data().LES_RESSOURCES.UNE_RESSOURCE.some(el=>{
                     return el.TYPE==='GROUPE' && el.CODE_RESSOURCE===CG
                 })){
                     tabResult.push(doc);
                 }
-
-            })
+            });
             console.log(tabResult);
             //map du tableau recuperé pour l'adapter au calendrier
         }
@@ -555,10 +539,11 @@ function datePArser(date,heure) {
 }
 function dateFin(date,heure,min) {
     if (heure.length===3) {
-        heure = '0' + heure;
+        heure = "0" + heure;
     }
-    let VarSplit=date.split('-');
-    let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]), parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3]));
+    let VarSplit=date.split("-");
+    let DateDebut=  new Date(parseInt(VarSplit[0]),parseInt(VarSplit[1])-1,parseInt(VarSplit[2]),
+        parseInt(heure[0]+heure[1]), parseInt(heure[2]+heure[3]));
     let DateFin=add_minutes(DateDebut,parseInt(min)).toString();
     return DateFin;
 
@@ -566,7 +551,7 @@ function dateFin(date,heure,min) {
 
 var add_minutes =  function (dt, minutes) {
     return new Date(dt.getTime() + minutes*60000);
-}
+};
 
 //let CollectionName;
 
